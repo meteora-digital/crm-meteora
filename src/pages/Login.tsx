@@ -70,18 +70,13 @@ const Login = () => {
             className="h-12 mx-auto mb-8"
           />
 
-          <div className="tag-pill mb-6 mx-auto w-fit">
-            <span className="tag-dot" />
-            HUB Meteora Digital
-          </div>
-
           <h1 className="font-display font-extrabold text-3xl mb-3">
             Bem-vindo ao{" "}
-            <span className="text-gradient">HUB</span>
+            <span className="text-gradient">CRM</span>
           </h1>
 
           <p className="text-sm text-foreground/55 leading-relaxed mb-8">
-            Central unificada de operações. Acesso exclusivo para o time Meteora Digital.
+            CRM unificado de gestão de leads, clientes e pipelines comerciais.
           </p>
 
           <button
