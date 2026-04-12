@@ -134,19 +134,10 @@ const CRM = () => {
       .filter((l) => !status || l.status === status)
       .reduce((sum, l) => sum + (parseFloat(l.revenue_potential) || 0), 0);
 
-  // Show login prompt if not authenticated
+  // Redirect to login if not authenticated
   if (!authLoading && !user) {
-    return (
-      <div className="min-h-screen grid-bg relative overflow-hidden flex items-center justify-center">
-        <div className="orb orb-purple" />
-        <div className="orb orb-blue" />
-        <div className="relative z-10 text-center space-y-4">
-          <h1 className="font-display font-bold text-3xl">CRM Unificado</h1>
-          <p className="text-muted-foreground">Faça login para acessar o CRM</p>
-          <Button onClick={() => navigate("/login")}>Entrar</Button>
-        </div>
-      </div>
-    );
+    navigate("/login", { replace: true });
+    return null;
   }
 
   if (authLoading) {
