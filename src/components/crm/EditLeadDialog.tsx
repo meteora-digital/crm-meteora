@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { statusLabels } from "./statusConfig";
 import { Save, Trash2 } from "lucide-react";
+import LeadPayments from "./LeadPayments";
 
 interface EditLeadDialogProps {
   lead: any | null;
