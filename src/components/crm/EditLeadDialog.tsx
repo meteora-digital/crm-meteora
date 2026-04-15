@@ -76,7 +76,8 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
 
     setSaving(false);
     if (error) {
-      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      console.error("Erro ao salvar:", error.message);
+      toast({ title: "Erro ao salvar", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       toast({ title: "Lead atualizado" });
       onOpenChange(false);
@@ -88,7 +89,8 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
     if (!confirm("Tem certeza que deseja excluir este lead?")) return;
     const { error } = await supabase.from("leads").delete().eq("id", lead.id);
     if (error) {
-      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      console.error("Erro ao excluir:", error.message);
+      toast({ title: "Erro ao excluir", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       toast({ title: "Lead excluído" });
       onOpenChange(false);

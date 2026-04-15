@@ -108,7 +108,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_lead_owner: { Args: { _lead_id: string }; Returns: boolean }
     }
     Enums: {
       lead_source:

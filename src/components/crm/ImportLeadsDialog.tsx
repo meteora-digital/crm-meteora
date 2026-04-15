@@ -33,15 +33,28 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
     return rows;
   };
 
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const MAX_ROWS = 500;
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast({ title: "Arquivo muito grande", description: "O tamanho máximo é 2MB.", variant: "destructive" });
+      return;
+    }
 
     setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (ev) => {
       const text = ev.target?.result as string;
       const rows = parseCSV(text);
+      if (rows.length > MAX_ROWS) {
+        toast({ title: `Limite de ${MAX_ROWS} linhas excedido`, description: `O arquivo contém ${rows.length} linhas.`, variant: "destructive" });
+        setFileName("");
+        return;
+      }
       setPreview(rows.slice(0, 5));
     };
     reader.readAsText(file);
@@ -57,14 +70,16 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
       const text = ev.target?.result as string;
       const rows = parseCSV(text);
 
+      const truncate = (val: string | null | undefined, max: number) => val ? val.slice(0, max) : null;
+
       const leadsToInsert = rows
         .filter((r) => r.name || r.nome)
         .map((r) => ({
-          name: r.name || r.nome || "Sem nome",
-          email: r.email || r["e-mail"] || null,
-          phone: r.phone || r.telefone || r.tel || null,
-          company: r.company || r.empresa || null,
-          notes: r.notes || r.observacao || r.obs || null,
+          name: truncate(r.name || r.nome || "Sem nome", 255)!,
+          email: truncate(r.email || r["e-mail"], 255),
+          phone: truncate(r.phone || r.telefone || r.tel, 50),
+          company: truncate(r.company || r.empresa, 255),
+          notes: truncate(r.notes || r.observacao || r.obs, 1000),
           source: "import" as any,
           status: "mql" as any,
           created_by: userId,
@@ -79,7 +94,8 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
       const { error } = await supabase.from("leads").insert(leadsToInsert);
 
       if (error) {
-        toast({ title: "Erro na importação", description: error.message, variant: "destructive" });
+        console.error("Erro na importação:", error.message);
+        toast({ title: "Erro na importação", description: "Tente novamente mais tarde.", variant: "destructive" });
       } else {
         toast({ title: `${leadsToInsert.length} leads importados com sucesso` });
         onSuccess();
