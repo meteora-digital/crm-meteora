@@ -33,15 +33,28 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
     return rows;
   };
 
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const MAX_ROWS = 500;
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast({ title: "Arquivo muito grande", description: "O tamanho máximo é 2MB.", variant: "destructive" });
+      return;
+    }
 
     setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (ev) => {
       const text = ev.target?.result as string;
       const rows = parseCSV(text);
+      if (rows.length > MAX_ROWS) {
+        toast({ title: `Limite de ${MAX_ROWS} linhas excedido`, description: `O arquivo contém ${rows.length} linhas.`, variant: "destructive" });
+        setFileName("");
+        return;
+      }
       setPreview(rows.slice(0, 5));
     };
     reader.readAsText(file);
