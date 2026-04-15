@@ -70,14 +70,16 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
       const text = ev.target?.result as string;
       const rows = parseCSV(text);
 
+      const truncate = (val: string | null | undefined, max: number) => val ? val.slice(0, max) : null;
+
       const leadsToInsert = rows
         .filter((r) => r.name || r.nome)
         .map((r) => ({
-          name: r.name || r.nome || "Sem nome",
-          email: r.email || r["e-mail"] || null,
-          phone: r.phone || r.telefone || r.tel || null,
-          company: r.company || r.empresa || null,
-          notes: r.notes || r.observacao || r.obs || null,
+          name: truncate(r.name || r.nome || "Sem nome", 255)!,
+          email: truncate(r.email || r["e-mail"], 255),
+          phone: truncate(r.phone || r.telefone || r.tel, 50),
+          company: truncate(r.company || r.empresa, 255),
+          notes: truncate(r.notes || r.observacao || r.obs, 1000),
           source: "import" as any,
           status: "mql" as any,
           created_by: userId,
