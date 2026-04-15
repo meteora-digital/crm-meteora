@@ -47,7 +47,8 @@ const LeadKanban = ({ leads, loading, onRefresh }: LeadKanbanProps) => {
 
     setDraggedId(null);
     if (error) {
-      toast({ title: "Erro ao mover lead", description: error.message, variant: "destructive" });
+      console.error("Erro ao mover lead:", error.message);
+      toast({ title: "Erro ao mover lead", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       onRefresh();
     }

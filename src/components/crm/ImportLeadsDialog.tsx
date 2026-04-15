@@ -79,7 +79,8 @@ const ImportLeadsDialog = ({ userId, onSuccess }: ImportLeadsDialogProps) => {
       const { error } = await supabase.from("leads").insert(leadsToInsert);
 
       if (error) {
-        toast({ title: "Erro na importação", description: error.message, variant: "destructive" });
+        console.error("Erro na importação:", error.message);
+        toast({ title: "Erro na importação", description: "Tente novamente mais tarde.", variant: "destructive" });
       } else {
         toast({ title: `${leadsToInsert.length} leads importados com sucesso` });
         onSuccess();

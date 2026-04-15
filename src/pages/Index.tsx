@@ -74,7 +74,8 @@ const CRM = () => {
 
     const { data, error } = await query;
     if (error) {
-      toast({ title: "Erro ao carregar leads", description: error.message, variant: "destructive" });
+      console.error("Erro ao carregar leads:", error.message);
+      toast({ title: "Erro ao carregar leads", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       setLeads(data || []);
     }
@@ -106,7 +107,8 @@ const CRM = () => {
     });
 
     if (error) {
-      toast({ title: "Erro ao criar lead", description: error.message, variant: "destructive" });
+      console.error("Erro ao criar lead:", error.message);
+      toast({ title: "Erro ao criar lead", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       toast({ title: "Lead adicionado com sucesso" });
       setNewLead({ name: "", email: "", phone: "", company: "", notes: "", status: "mql", revenue_potential: "" });
