@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { statusLabels } from "./statusConfig";
 import { Save, Trash2 } from "lucide-react";
+import LeadPayments from "./LeadPayments";
 
 interface EditLeadDialogProps {
   lead: any | null;
@@ -97,7 +98,7 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border">
+      <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display">Editar Lead</DialogTitle>
         </DialogHeader>
@@ -159,6 +160,9 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
+
+          {/* Pagamentos */}
+          {lead && <LeadPayments leadId={lead.id} />}
         </div>
       </DialogContent>
     </Dialog>
