@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ADD COLUMN partner_id text DEFAULT NULL;

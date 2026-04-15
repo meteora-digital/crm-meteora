@@ -65,6 +65,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          partner_id: string | null
           phone: string | null
           revenue_potential: number | null
           source: Database["public"]["Enums"]["lead_source"] | null
@@ -80,6 +81,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          partner_id?: string | null
           phone?: string | null
           revenue_potential?: number | null
           source?: Database["public"]["Enums"]["lead_source"] | null
@@ -95,6 +97,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          partner_id?: string | null
           phone?: string | null
           revenue_potential?: number | null
           source?: Database["public"]["Enums"]["lead_source"] | null

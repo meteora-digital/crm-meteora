@@ -38,6 +38,7 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
     notes: "",
     status: "mql",
     revenue_potential: "",
+    partner_id: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -51,6 +52,7 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
         notes: lead.notes || "",
         status: lead.status || "mql",
         revenue_potential: String(lead.revenue_potential || 0),
+        partner_id: lead.partner_id || "",
       });
     }
   }, [lead]);
@@ -71,7 +73,8 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
         notes: form.notes || null,
         status: form.status as any,
         revenue_potential: parseFloat(form.revenue_potential) || 0,
-      })
+        partner_id: form.partner_id || null,
+      } as any)
       .eq("id", lead.id);
 
     setSaving(false);
@@ -149,6 +152,16 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
             value={form.revenue_potential}
             onChange={(e) => setForm({ ...form, revenue_potential: e.target.value })}
           />
+          <Input
+            placeholder="ID do Parceiro (referral)"
+            value={form.partner_id}
+            onChange={(e) => setForm({ ...form, partner_id: e.target.value })}
+          />
+          {form.partner_id && (
+            <p className="text-xs text-muted-foreground">
+              Parceiro: {form.partner_id} — <span className="italic">dados serão carregados via API Rede Parceira</span>
+            </p>
+          )}
           <Textarea
             placeholder="Observações"
             value={form.notes}

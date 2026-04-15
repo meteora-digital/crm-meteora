@@ -59,6 +59,7 @@ const CRM = () => {
     notes: "",
     status: "mql" as string,
     revenue_potential: "",
+    partner_id: "",
   });
 
   const fetchLeads = async () => {
@@ -104,14 +105,15 @@ const CRM = () => {
       source: "manual" as any,
       created_by: user!.id,
       revenue_potential: parseFloat(newLead.revenue_potential) || 0,
-    });
+      partner_id: newLead.partner_id || null,
+    } as any);
 
     if (error) {
       console.error("Erro ao criar lead:", error.message);
       toast({ title: "Erro ao criar lead", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
       toast({ title: "Lead adicionado com sucesso" });
-      setNewLead({ name: "", email: "", phone: "", company: "", notes: "", status: "mql", revenue_potential: "" });
+      setNewLead({ name: "", email: "", phone: "", company: "", notes: "", status: "mql", revenue_potential: "", partner_id: "" });
       setAddOpen(false);
       fetchLeads();
     }
@@ -253,6 +255,11 @@ const CRM = () => {
                     step="0.01"
                     value={newLead.revenue_potential}
                     onChange={(e) => setNewLead({ ...newLead, revenue_potential: e.target.value })}
+                  />
+                  <Input
+                    placeholder="ID do Parceiro (referral)"
+                    value={newLead.partner_id}
+                    onChange={(e) => setNewLead({ ...newLead, partner_id: e.target.value })}
                   />
                   <Textarea
                     placeholder="Observações"
