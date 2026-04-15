@@ -154,7 +154,11 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
           />
-          <div className="flex gap-3">
+
+          {/* Pagamentos */}
+          {lead && <LeadPayments leadId={lead.id} />}
+
+          <div className="flex gap-3 pt-2 border-t border-border">
             <Button onClick={handleSave} className="flex-1" disabled={saving}>
               <Save className="w-4 h-4 mr-2" /> Salvar
             </Button>
@@ -162,9 +166,6 @@ const EditLeadDialog = ({ lead, open, onOpenChange, onSaved }: EditLeadDialogPro
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
-
-          {/* Pagamentos */}
-          {lead && <LeadPayments leadId={lead.id} />}
         </div>
       </DialogContent>
     </Dialog>
