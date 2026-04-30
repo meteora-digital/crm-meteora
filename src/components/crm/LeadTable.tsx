@@ -12,7 +12,6 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil } from "lucide-react";
 import EditLeadDialog from "./EditLeadDialog";
-import { Badge } from "@/components/ui/badge";
 
 const tagClass = (tag: string) => {
   if (tag === "Lead Site Meteora") return "bg-lime/15 text-lime border border-lime/30";
