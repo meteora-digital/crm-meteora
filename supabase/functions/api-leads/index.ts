@@ -60,12 +60,24 @@ Deno.serve(async (req) => {
       // System user id used as created_by for API-originated leads
       const SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000";
 
+      // Build notes: original notes + diagnostico (structured Q&A) appended
+      let notesContent: string | null = body.notes ? String(body.notes) : null;
+      if (body.diagnostico && typeof body.diagnostico === "object") {
+        const lines: string[] = ["", "--- Diagnóstico ---"];
+        for (const [k, v] of Object.entries(body.diagnostico)) {
+          if (v === null || v === undefined || v === "") continue;
+          const value = typeof v === "object" ? JSON.stringify(v) : String(v);
+          lines.push(`${k}: ${value}`);
+        }
+        notesContent = (notesContent ? notesContent : "") + lines.join("\n");
+      }
+
       const insertPayload: Record<string, unknown> = {
         name,
         email: body.email ? String(body.email).trim() : null,
         phone: body.phone ? String(body.phone).trim() : null,
         company: body.company ? String(body.company).trim() : null,
-        notes: body.notes ? String(body.notes) : null,
+        notes: notesContent,
         status,
         source,
         revenue_potential: body.revenue_potential != null ? Number(body.revenue_potential) || 0 : 0,
@@ -90,6 +102,36 @@ Deno.serve(async (req) => {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
+      }
+
+      // Build tags: one per UTM (separate) + "Lead Site Meteora" + any custom tags from body
+      const tagSet = new Set<string>();
+      tagSet.add("Lead Site Meteora");
+      const utmFields: Array<[string, string]> = [
+        ["utm_source", "Origem"],
+        ["utm_medium", "Mídia"],
+        ["utm_campaign", "Campanha"],
+        ["utm_term", "Termo"],
+        ["utm_content", "Conteúdo"],
+      ];
+      for (const [field, label] of utmFields) {
+        const v = body[field];
+        if (v && String(v).trim()) {
+          tagSet.add(`${label}: ${String(v).trim()}`);
+        }
+      }
+      if (Array.isArray(body.tags)) {
+        for (const t of body.tags) {
+          if (t && typeof t === "string" && t.trim()) tagSet.add(t.trim());
+        }
+      }
+
+      const tagRows = Array.from(tagSet).map((tag) => ({ lead_id: created.id, tag }));
+      if (tagRows.length > 0) {
+        const { error: tagsError } = await supabase.from("lead_tags").insert(tagRows);
+        if (tagsError) {
+          console.error("Tags insert error:", tagsError.message);
+        }
       }
 
       return new Response(JSON.stringify({ lead: created }), {
@@ -127,6 +169,7 @@ Deno.serve(async (req) => {
     // Also fetch payments for each lead
     const leadIds = (data || []).map((l: any) => l.id);
     let payments: any[] = [];
+    let tags: any[] = [];
     if (leadIds.length > 0) {
       const { data: payData } = await supabase
         .from("lead_payments")
@@ -134,12 +177,19 @@ Deno.serve(async (req) => {
         .in("lead_id", leadIds)
         .order("due_date", { ascending: true });
       payments = payData || [];
+
+      const { data: tagData } = await supabase
+        .from("lead_tags")
+        .select("*")
+        .in("lead_id", leadIds);
+      tags = tagData || [];
     }
 
-    // Attach payments to leads
+    // Attach payments and tags to leads
     const leadsWithPayments = (data || []).map((lead: any) => ({
       ...lead,
       payments: payments.filter((p: any) => p.lead_id === lead.id),
+      tags: tags.filter((t: any) => t.lead_id === lead.id).map((t: any) => t.tag),
     }));
 
     return new Response(JSON.stringify({ leads: leadsWithPayments, count: leadsWithPayments.length }), {
