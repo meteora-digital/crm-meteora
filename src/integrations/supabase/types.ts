@@ -55,6 +55,35 @@ export type Database = {
           },
         ]
       }
+      lead_tags: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_tags_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           assigned_to: string | null
