@@ -78,7 +78,19 @@ const CRM = () => {
       console.error("Erro ao carregar leads:", error.message);
       toast({ title: "Erro ao carregar leads", description: "Tente novamente mais tarde.", variant: "destructive" });
     } else {
-      setLeads(data || []);
+      // Fetch tags for these leads in one round-trip
+      const leadIds = (data || []).map((l: any) => l.id);
+      let tagMap: Record<string, string[]> = {};
+      if (leadIds.length > 0) {
+        const { data: tagRows } = await supabase
+          .from("lead_tags")
+          .select("lead_id, tag")
+          .in("lead_id", leadIds);
+        for (const row of tagRows || []) {
+          (tagMap[row.lead_id] ||= []).push(row.tag);
+        }
+      }
+      setLeads((data || []).map((l: any) => ({ ...l, tags: tagMap[l.id] || [] })));
     }
     setLoading(false);
   };
@@ -126,7 +138,8 @@ const CRM = () => {
       lead.name?.toLowerCase().includes(s) ||
       lead.email?.toLowerCase().includes(s) ||
       lead.company?.toLowerCase().includes(s) ||
-      lead.phone?.includes(s)
+      lead.phone?.includes(s) ||
+      (Array.isArray(lead.tags) && lead.tags.some((t: string) => t.toLowerCase().includes(s)))
     );
   });
 
