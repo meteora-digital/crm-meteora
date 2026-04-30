@@ -12,6 +12,16 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil } from "lucide-react";
 import EditLeadDialog from "./EditLeadDialog";
+import { Badge } from "@/components/ui/badge";
+
+const tagClass = (tag: string) => {
+  if (tag === "Lead Site Meteora") return "bg-lime/15 text-lime border border-lime/30";
+  if (tag.startsWith("Origem:")) return "bg-purple/15 text-purple-light border border-purple/30";
+  if (tag.startsWith("Mídia:")) return "bg-blue/15 text-blue-light border border-blue/30";
+  if (tag.startsWith("Campanha:")) return "bg-secondary/15 text-secondary border border-secondary/30";
+  if (tag.startsWith("Termo:") || tag.startsWith("Conteúdo:")) return "bg-muted text-muted-foreground border border-border";
+  return "bg-muted text-foreground border border-border";
+};
 
 interface LeadTableProps {
   leads: any[];
@@ -52,6 +62,7 @@ const LeadTable = ({ leads, loading, onRefresh }: LeadTableProps) => {
               <TableHead>Telefone</TableHead>
               <TableHead>Empresa</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Etiquetas</TableHead>
               <TableHead>Potencial</TableHead>
               <TableHead>Criado em</TableHead>
               <TableHead className="w-10"></TableHead>
@@ -68,6 +79,23 @@ const LeadTable = ({ leads, loading, onRefresh }: LeadTableProps) => {
                   <span className={`text-xs px-2.5 py-1 rounded-full ${statusColors[lead.status] || ""}`}>
                     {statusLabels[lead.status] || lead.status}
                   </span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1 max-w-[260px]">
+                    {(lead.tags || []).length === 0 ? (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    ) : (
+                      (lead.tags as string[]).map((tag) => (
+                        <span
+                          key={tag}
+                          className={`text-[10px] px-2 py-0.5 rounded-full ${tagClass(tag)}`}
+                          title={tag}
+                        >
+                          {tag}
+                        </span>
+                      ))
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm font-medium text-lime">
