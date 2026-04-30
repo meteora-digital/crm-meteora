@@ -122,6 +122,36 @@ const LeadKanban = ({ leads, loading, onRefresh }: LeadKanbanProps) => {
                     <p className="text-xs font-semibold text-lime">
                       {formatCurrency(parseFloat(lead.revenue_potential) || 0)}
                     </p>
+                    {Array.isArray(lead.tags) && lead.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {(lead.tags as string[]).slice(0, 4).map((tag) => {
+                          const cls =
+                            tag === "Lead Site Meteora"
+                              ? "bg-lime/15 text-lime border-lime/30"
+                              : tag.startsWith("Origem:")
+                              ? "bg-purple/15 text-purple-light border-purple/30"
+                              : tag.startsWith("Mídia:")
+                              ? "bg-blue/15 text-blue-light border-blue/30"
+                              : tag.startsWith("Campanha:")
+                              ? "bg-secondary/15 text-secondary border-secondary/30"
+                              : "bg-muted text-muted-foreground border-border";
+                          return (
+                            <span
+                              key={tag}
+                              className={`text-[9px] px-1.5 py-0.5 rounded-full border ${cls}`}
+                              title={tag}
+                            >
+                              {tag.length > 22 ? tag.slice(0, 20) + "…" : tag}
+                            </span>
+                          );
+                        })}
+                        {lead.tags.length > 4 && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full border border-border text-muted-foreground">
+                            +{lead.tags.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
